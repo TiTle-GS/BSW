@@ -35,15 +35,19 @@
     
    <div id="toast" class="toast-msg" style="background: linear-gradient(135deg, #e86baa, #efad28); color: #fff;"><span id="toast-text"></span></div>
 
-   <div id="success-overlay" class="success-overlay">
-    <div style="background: rgba(252,228,236,0.97); backdrop-filter: blur(10px);" class="rounded-3xl p-10 text-center max-w-md mx-4 shadow-2xl">
-     <div class="text-6xl mb-4">✨</div>
-     <h2 class="text-2xl font-bold mb-3" style="color: #e86baa; font-family: 'Prompt', sans-serif;">ส่งแบบสอบถามเรียบร้อยแล้ว</h2>
-     <p class="text-lg mb-6" style="color: #e86baa;">ขอขอบคุณที่ร่วมตอบแบบสอบถาม</p>
-     <button onclick="resetForm()" class="px-8 py-3 rounded-full font-semibold text-white transition-all hover:scale-105" style="background: linear-gradient(135deg, #e86baa, #efad28);"> ตอบแบบสอบถามใหม่ </button>
-    </div>
-   </div>
-
+  <div id="success-overlay" class="success-overlay">
+  <div style="background: rgba(252,228,236,0.97); backdrop-filter: blur(10px);" class="rounded-3xl p-10 text-center max-w-md mx-4 shadow-2xl">
+    <div class="text-6xl mb-4">✨</div>
+    <h2 class="text-2xl font-bold mb-3" style="color: #e86baa; font-family: 'Prompt', sans-serif;">ส่งแบบสอบถามเรียบร้อยแล้ว</h2>
+    <p class="text-lg mb-6" style="color: #e86baa;">ขอขอบคุณที่ร่วมตอบแบบสอบถาม</p>
+    
+    <button onclick="window.location.href='https://www.facebook.com/bangsaaiwitthaya/?locale=th_TH'" 
+            class="px-8 py-3 rounded-full font-semibold text-white transition-all hover:scale-105" 
+            style="background: linear-gradient(135deg, #e86baa, #efad28);"> 
+      เยี่ยมชมเพจโรงเรียน 
+    </button>
+  </div>
+</div>
    <div class="max-w-3xl mx-auto px-4 py-8 md:py-12">
     <header class="text-center mb-10 animate-in delay-1">
      <div class="mb-4 flex justify-center">
@@ -230,6 +234,7 @@
 
     function resetForm() {
       location.reload();
+     
     }
 
     buildQuestions();
