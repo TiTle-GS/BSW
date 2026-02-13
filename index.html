@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="th" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>แบบสอบถาม บางซ้ายวิทยา</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    html, body { height: 100%; margin: 0; }
+    * { box-sizing: border-box; }
+    .app-wrapper { font-family: 'Sarabun', sans-serif; min-height: 100%; width: 100%; }
+    .rating-cell { position: relative; cursor: pointer; transition: all 0.2s ease; }
+    .rating-cell:hover { transform: scale(1.15); }
+    .rating-circle { width: 28px; height: 28px; border-radius: 50%; border: 2.5px solid #e86baa; display: flex; align-items: center; justify-content: center; transition: all 0.25s ease; background: transparent; }
+    .rating-circle.selected { background: #e86baa; border-color: #e86baa; box-shadow: 0 0 12px rgba(232, 107, 170, 0.4); }
+    .rating-circle.selected::after { content: '✓'; color: white; font-size: 14px; font-weight: 700; }
+    @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+    .animate-in { animation: fadeSlideUp 0.7s ease forwards; opacity: 0; }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.25s; }
+    .delay-3 { animation-delay: 0.4s; }
+    .delay-4 { animation-delay: 0.55s; }
+    .school-shimmer { background: linear-gradient(90deg, #e86baa 0%, #efad28 50%, #e86baa 100%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shimmer 3s linear infinite; }
+    .toast-msg { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); z-index: 1000; padding: 14px 28px; border-radius: 12px; font-weight: 600; transition: transform 0.4s ease; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+    .toast-msg.show { transform: translateX(-50%) translateY(0); }
+    .success-overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
+    .success-overlay.visible { opacity: 1; pointer-events: auto; }
+    .submit-btn { position: relative; overflow: hidden; }
+  </style>
+ </head>
+ <body class="h-full">
+  <div id="app-wrapper" class="app-wrapper overflow-auto" style="background: linear-gradient(135deg, #fce4ec 0%, #fff9c4 30%, #fce4ec 60%, #ffe082 100%);">
+    
+   <div id="toast" class="toast-msg" style="background: linear-gradient(135deg, #e86baa, #efad28); color: #fff;"><span id="toast-text"></span></div>
+
+   <div id="success-overlay" class="success-overlay">
+    <div style="background: rgba(252,228,236,0.97); backdrop-filter: blur(10px);" class="rounded-3xl p-10 text-center max-w-md mx-4 shadow-2xl">
+     <div class="text-6xl mb-4">✨</div>
+     <h2 class="text-2xl font-bold mb-3" style="color: #e86baa; font-family: 'Prompt', sans-serif;">ส่งแบบสอบถามเรียบร้อยแล้ว</h2>
+     <p class="text-lg mb-6" style="color: #e86baa;">ขอขอบคุณที่ร่วมตอบแบบสอบถาม</p>
+     <button onclick="resetForm()" class="px-8 py-3 rounded-full font-semibold text-white transition-all hover:scale-105" style="background: linear-gradient(135deg, #e86baa, #efad28);"> ตอบแบบสอบถามใหม่ </button>
+    </div>
+   </div>
+
+   <div class="max-w-3xl mx-auto px-4 py-8 md:py-12">
+    <header class="text-center mb-10 animate-in delay-1">
+     <div class="mb-4"><span class="text-5xl">🎀</span></div>
+     <h1 class="text-2xl md:text-3xl font-bold mb-2 school-shimmer" style="font-family: 'Prompt', sans-serif; line-height: 1.6;">แบบสอบถามการจัดงาน<br>「 บางซ้ายวิทยา 」</h1>
+     <div class="w-32 h-0.5 mx-auto my-4" style="background: linear-gradient(90deg, transparent, #e86baa, transparent);"></div>
+     <p class="text-base md:text-lg leading-relaxed max-w-xl mx-auto" style="color: #c2185b;">แบบสอบถามนี้จัดทำขึ้นเพื่อประเมินความสำเร็จของการดำเนินงาน เพื่อนำผลการประเมินที่ได้ไปปรับปรุงและพัฒนาการดำเนินงานในครั้งต่อไป</p>
+    </header>
+
+    <form id="survey-form" onsubmit="handleSubmit(event)" class="space-y-8">
+     <section class="animate-in delay-2 rounded-2xl p-6 md:p-8 shadow-lg" style="background: rgba(255,255,255,0.85); border: 1px solid #f8bbd0;">
+      <h2 class="text-xl font-bold mb-6 flex items-center gap-2" style="color: #e86baa; font-family: 'Prompt', sans-serif;"><span style="background: linear-gradient(135deg, #e86baa, #efad28); color: #fff; width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 14px;">๑</span> ข้อมูลทั่วไป</h2>
+      <div class="mb-6"><label class="block font-semibold mb-3" style="color: #6a1b5e;">เพศ</label>
+       <div class="flex flex-wrap gap-4">
+         <label class="flex items-center gap-3 cursor-pointer px-5 py-3 rounded-xl border-2 transition-all hover:shadow-md gender-option" style="border-color: #f8bbd0; background: #fff5f8;" data-value="ชาย"> 
+           <input type="radio" name="gender" value="ชาย" class="hidden"> 
+           <span class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all" style="border-color: #e86baa;"> <span class="w-2.5 h-2.5 rounded-full" style="background: transparent;"></span> </span> 
+           <span style="color: #6a1b5e;">ชาย</span> 
+         </label> 
+         <label class="flex items-center gap-3 cursor-pointer px-5 py-3 rounded-xl border-2 transition-all hover:shadow-md gender-option" style="border-color: #f8bbd0; background: #fff5f8;" data-value="หญิง"> 
+           <input type="radio" name="gender" value="หญิง" class="hidden"> 
+           <span class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all" style="border-color: #e86baa;"> <span class="w-2.5 h-2.5 rounded-full" style="background: transparent;"></span> </span> 
+           <span style="color: #6a1b5e;">หญิง</span> 
+         </label>
+       </div>
+      </div>
+      <div><label class="block font-semibold mb-3" style="color: #6a1b5e;">สถานะ</label>
+       <div class="flex flex-wrap gap-4">
+         <label class="flex items-center gap-3 cursor-pointer px-5 py-3 rounded-xl border-2 transition-all hover:shadow-md role-option" style="border-color: #f8bbd0; background: #fff5f8;" data-value="ศิษย์เก่า"> 
+           <input type="radio" name="role" value="ศิษย์เก่า" class="hidden"> 
+           <span class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all" style="border-color: #e86baa;"> <span class="w-2.5 h-2.5 rounded-full" style="background: transparent;"></span> </span> 
+           <span style="color: #6a1b5e;">ศิษย์เก่า</span> 
+         </label> 
+         <label class="flex items-center gap-3 cursor-pointer px-5 py-3 rounded-xl border-2 transition-all hover:shadow-md role-option" style="border-color: #f8bbd0; background: #fff5f8;" data-value="อาจารย์"> 
+           <input type="radio" name="role" value="อาจารย์" class="hidden"> 
+           <span class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all" style="border-color: #e86baa;"> <span class="w-2.5 h-2.5 rounded-full" style="background: transparent;"></span> </span> 
+           <span style="color: #6a1b5e;">อาจารย์</span> 
+         </label>
+       </div>
+      </div>
+     </section>
+
+     <section class="animate-in delay-3 rounded-2xl p-6 md:p-8 shadow-lg" style="background: rgba(255,255,255,0.85); border: 1px solid #f8bbd0;">
+      <h2 class="text-xl font-bold mb-2 flex items-center gap-2" style="color: #e86baa; font-family: 'Prompt', sans-serif;"><span style="background: linear-gradient(135deg, #e86baa, #efad28); color: #fff; width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 14px;">๒</span> ความคิดเห็นเกี่ยวกับการดำเนินงานโครงการ</h2>
+      <p class="text-sm mb-6" style="color: #e86baa;">ขอให้ท่านเลือกระดับที่ตรงกับความคิดเห็นของท่าน (๕=มากที่สุด, ๑=น้อยที่สุด)</p>
+      <div id="questions-container" class="space-y-1"></div>
+     </section>
+
+     <section class="animate-in delay-4 rounded-2xl p-6 md:p-8 shadow-lg" style="background: rgba(255,255,255,0.85); border: 1px solid #f8bbd0;">
+      <h2 class="text-xl font-bold mb-4 flex items-center gap-2" style="color: #e86baa; font-family: 'Prompt', sans-serif;"><span style="background: linear-gradient(135deg, #e86baa, #efad28); color: #fff; width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 14px;">๓</span> ข้อเสนอแนะอื่นๆ</h2>
+      <textarea id="suggestions-input" name="suggestions" rows="5" placeholder="กรุณากรอกข้อเสนอแนะของท่าน..." class="w-full rounded-xl p-4 text-base resize-none focus:outline-none focus:ring-2 transition-all" style="background: #fff5f8; border: 2px solid #f8bbd0; color: #6a1b5e;"></textarea>
+     </section>
+
+     <div class="text-center animate-in delay-4 pb-8">
+       <button type="submit" id="submit-btn" class="submit-btn px-12 py-4 rounded-full text-lg font-bold text-white shadow-xl transition-all hover:scale-105 active:scale-95 disabled:opacity-50" style="background: linear-gradient(135deg, #e86baa, #c2185b, #efad28);">
+         <span id="btn-text">ส่งแบบสอบถาม</span>
+         <span id="btn-loading" class="hidden">กำลังส่ง...</span>
+       </button>
+     </div>
+    </form>
+   </div>
+  </div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxualocfr3No7uKKzFz4W-XHVMlVnNeE478OyhCI1TK7Kcx6Wo8UoFmnWrshp8jknsUgQ/exec";
+
+    const questions = [
+      { id: 'q1', num: '๑', text: 'การประชาสัมพันธ์การจัดโครงการ' },
+      { id: 'q2', num: '๒', text: 'การดำเนินงานเป็นระบบและมีขั้นตอนชัดเจน' },
+      { id: 'q3', num: '๓', text: 'รูปแบบของการจัดโครงการมีความเหมาะสม' },
+      { id: 'q4', num: '๔', text: 'ความเหมาะสมของวันและระยะเวลาในการจัดโครงการ' },
+      { id: 'q5', num: '๕', text: 'ความพึงพอใจด้านคณะกรรมการดำเนินงาน' },
+      { id: 'q6', num: '๖', text: 'ความเหมาะสมของสถานที่' },
+      { id: 'q7', num: '๗', text: 'ความสะอาดเรียบร้อยของสถานที่' }
+    ];
+
+    let ratings = {};
+    let selectedGender = null;
+    let selectedRole = null;
+
+    function buildQuestions() {
+      const container = document.getElementById('questions-container');
+      container.innerHTML = '';
+      questions.forEach((q) => {
+        const row = document.createElement('div');
+        row.className = 'q-row rounded-xl p-4 border-b border-pink-50 md:flex md:items-center md:justify-between';
+        row.innerHTML = `
+          <div class="mb-3 md:mb-0 md:w-1/2">
+            <span class="font-bold text-pink-500">${q.num}.</span> ${q.text}
+          </div>
+          <div class="flex justify-between md:w-1/2 md:justify-end gap-4">
+            ${[5,4,3,2,1].map(v => `
+              <div class="flex flex-col items-center">
+                <div class="rating-cell" onclick="setRating('${q.id}', ${v})">
+                  <div class="rating-circle" id="rc-${q.id}-${v}"></div>
+                </div>
+                <span class="text-xs mt-1 text-pink-400">${v}</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function setRating(qId, val) {
+      ratings[qId] = val;
+      [5,4,3,2,1].forEach(v => {
+        const el = document.getElementById(`rc-${qId}-${v}`);
+        if (el) el.classList.toggle('selected', v === val);
+      });
+    }
+
+    function setupOptions() {
+      document.querySelectorAll('.gender-option').forEach(el => {
+        el.onclick = () => {
+          selectedGender = el.dataset.value;
+          updateOptionUI('.gender-option', selectedGender);
+        };
+      });
+      document.querySelectorAll('.role-option').forEach(el => {
+        el.onclick = () => {
+          selectedRole = el.dataset.value;
+          updateOptionUI('.role-option', selectedRole);
+        };
+      });
+    }
+
+    function updateOptionUI(selector, val) {
+      document.querySelectorAll(selector).forEach(el => {
+        const isSel = el.dataset.value === val;
+        el.style.borderColor = isSel ? '#e86baa' : '#f8bbd0';
+        el.style.background = isSel ? '#f8d8e8' : '#fff5f8';
+        el.querySelector('.w-2\\.5').style.background = isSel ? '#e86baa' : 'transparent';
+      });
+    }
+
+    async function handleSubmit(e) {
+      e.preventDefault();
+      if (!selectedGender || !selectedRole) return showToast('กรุณาเลือกข้อมูลทั่วไปให้ครบ', true);
+      if (Object.keys(ratings).length < questions.length) return showToast('กรุณาประเมินให้ครบทุกข้อ', true);
+
+      const btn = document.getElementById('submit-btn');
+      const btnText = document.getElementById('btn-text');
+      const btnLoading = document.getElementById('btn-loading');
+
+      btn.disabled = true;
+      btnText.classList.add('hidden');
+      btnLoading.classList.remove('hidden');
+
+      const payload = {
+        gender: selectedGender,
+        role: selectedRole,
+        ...ratings,
+        suggestions: document.getElementById('suggestions-input').value
+      };
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: JSON.stringify(payload)
+        });
+        document.getElementById('success-overlay').classList.add('visible');
+      } catch (err) {
+        showToast('เกิดข้อผิดพลาด ลองใหม่อีกครั้ง', true);
+      } finally {
+        btn.disabled = false;
+        btnText.classList.remove('hidden');
+        btnLoading.classList.add('hidden');
+      }
+    }
+
+    function showToast(msg, isError) {
+      const t = document.getElementById('toast');
+      document.getElementById('toast-text').innerText = msg;
+      t.style.background = isError ? '#f44336' : '#e86baa';
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    function resetForm() {
+      location.reload();
+    }
+
+    buildQuestions();
+    setupOptions();
+  </script>
+ </body>
+</html>
